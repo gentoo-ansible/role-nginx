@@ -1,0 +1,83 @@
+---
+# List of modules to compile nginx with.
+nginx_modules: [access, gzip, proxy, rewrite, spdy, stub_status]
+
+# Whether to enable IPv6.
+nginx_ipv6: true
+
+# Whether to copy default server config to sites/default.conf.
+nginx_default_server_enabled: true
+
+#
+# Logging
+#
+
+# Logging level for the error_log.
+# Allowed values: debug, info, notice, warn, error, crit, alert, emerg
+nginx_error_log_level: warn
+
+# Hash with the log formats.
+nginx_log_formats:
+  main: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"'
+
+#
+# Resources
+#
+
+# The number of worker processes.
+nginx_worker_processes: "{{ ansible_processor_count }}"
+
+# Specifies the maximum accepted body size of a client request, as
+# indicated by the request header Content-Length. If the stated content
+# length is greater than this size, then the client receives the HTTP
+# error code 413. Set to 0 to disable.
+nginx_client_max_body_size: 10M
+
+# Buffer size for reading client request body. In case the request body is
+# larger than the buffer, the whole body or only its part is written to a
+# temporary file.
+nginx_client_body_buffer_size: 128k
+
+# Timeout for keep-alive connections in seconds.
+# Server will close connections after this time.
+nginx_keepalive_timeout: 15
+
+# Timeout of the SSL session cache in seconds.
+nginx_ssl_session_timeout: 600
+
+#
+# Compression
+#
+
+# Gzip compression level of a response. Number between 1 (lowest) and 9 (highest).
+nginx_gzip_comp_level: 6
+
+# Minimum length of a response that will be gzipped.
+nginx_gzip_min_length: 1400
+
+# List of Media Types (MIME) to enable gzipping for.
+nginx_gzip_types:
+  - text/css
+  - text/plain
+  - application/atom+xml
+  - application/javascript
+  - application/json
+  - application/xml
+  - application/xml+rss
+
+# List of options to enable or disable gzipping of responses for proxied
+# requests depending on the request and response.
+#
+# Options:
+#   - off      ... disables compression for all proxied requests, ignoring other parameters
+#   - any      ... enables compression for all proxied requests
+#   Enables compression if a reponse header:
+#   - expired  ... includes Expires with a value that disables caching
+#   - no-cache ... includes Cache-Control with no-cache
+#   - no-store ... includes Cache-Control with no-store
+#   - private  ... includes Cache-Control with private
+#   - no_last_modified ... does not include Last-Modified
+#   - no_etag  ... does not include ETag
+#   Enables compression if a request header:
+#   - auth     ... includes Authorization
+nginx_gzip_proxied: [any]

@@ -1,0 +1,5 @@
+---
+nginx_sites_dir: /etc/nginx/sites
+nginx_incl_dir: /etc/nginx/incl
+nginx_port_80: "{{ '[::]:80' if nginx_ipv6 else '80' }}"
+nginx_port_443: "{{ '[::]:443' if nginx_ipv6 else '443' }}"

@@ -1,0 +1,30 @@
+---
+- name: configure nginx.conf
+  template: >
+    src=nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+    owner=root group=root mode=0644
+  notify: reload nginx
+
+- name: configure default server
+  template: >
+    src=default.conf.j2
+    dest={{ nginx_sites_dir }}/default.conf
+    owner=root group=root mode=0644
+  notify: reload nginx
+  when: nginx_default_server_enabled
+
+- name: copy incl config fragments
+  copy: >
+    src={{ item }}
+    dest={{ nginx_incl_dir }}
+    owner=root group=root mode=0644
+  with_fileglob:
+    - "incl/*"
+  notify: reload nginx
+
+- name: configure logrotate
+  copy: >
+    src=logrotate.d/nginx
+    dest=/etc/logrotate.d/nginx
+    owner=root group=root mode=0644

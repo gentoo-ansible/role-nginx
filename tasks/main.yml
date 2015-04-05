@@ -1,0 +1,14 @@
+---
+- include: install.yml tags=install
+
+- include: configure.yml tags=config
+
+- name: enable and start nginx
+  service: name=nginx enabled=true state=started
+
+- name: ensure that HTTP and HTTP(S) ports are open
+  wait_for: >
+    port={{ item }}
+    timeout=10
+  with_items: [80, 443]
+  tags: check

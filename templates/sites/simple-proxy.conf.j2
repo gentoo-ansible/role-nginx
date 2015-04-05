@@ -1,0 +1,47 @@
+# {{ ansible_managed }}
+
+server {
+{% if item.ssl is defined %}
+	listen		{{ nginx_port_443 }} ssl;
+{% else %}
+	listen		{{ nginx_port_80 }};
+{% endif %}
+	server_name	{{ item.server_name }};
+
+	access_log	/var/log/nginx/{{ item.site_name }}.access.log main;
+	error_log	/var/log/nginx/{{ item.site_name }}.error.log warn;
+
+{% if item.ssl_cert is defined %}
+	ssl_certificate		{{ item.ssl_cert }};
+	ssl_certificate_key	{{ item.ssl_cert_key }};
+
+{% endif %}
+{% if item.ssl is defined %}
+	# Enable HSTS Policy
+	add_header Strict-Transport-Security "max-age=315360000";
+
+{% endif %}
+	# Common HTTP headers for proxy
+	include incl/proxy_headers.conf;
+
+	# Favicon
+	include incl/handle_favicon.conf;
+
+	location / {
+{% for rule in item.get('rewrites', []) %}
+		rewrite {{ rule }};
+{% endfor %}
+
+		proxy_pass		http://{{ item.proxy_server }};
+		proxy_redirect	default;
+	}
+}
+
+{% if item.ssl is defined %}
+server {
+	listen			{{ nginx_port_80 }};
+	server_name		{{ item.server_name }};
+
+	rewrite			^ https://$server_name$request_uri? permanent;
+}
+{% endif %}

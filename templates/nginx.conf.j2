@@ -1,0 +1,138 @@
+# {{ ansible_managed }}
+
+user nginx nginx;
+worker_processes {{ nginx_worker_processes }};
+
+error_log /var/log/nginx/error.log {{ nginx_error_log_level }};
+
+events {
+	# The maximum number of simultaneous connections that can be opened by
+	# a worker process.
+	worker_connections 1024;
+	use epoll;
+}
+
+http {
+	#
+	# Media Types
+	#
+	include 		/etc/nginx/mime.types;
+	default_type 	application/octet-stream;
+
+	#
+	# Logging
+	#
+{% for name, format in nginx_log_formats.items() %}
+	log_format 		{{ name }} '{{ format | replace('\'', '\\\'') }}';
+{% endfor %}
+
+	access_log		/var/log/nginx/access.log main;
+
+	#
+	# Resources
+	#
+
+	# Timeout for reading client request header (in seconds).
+	client_header_timeout 		10;
+
+	# Timeout for reading client request body (in seconds). The timeout is set
+	# only for a period between two successive read operations, not for the
+	# transmission of the whole request body.
+	client_body_timeout 		10;
+
+	# Timeout for transmitting a response to the client (in seconds).
+	# The timeout is set only between two successive write operations, not for
+	# the transmission of the whole response
+	send_timeout 				15;
+
+	# Timeout for keep-alive connections. Server will close connections after
+	# this time.
+	keepalive_timeout 			{{ nginx_keepalive_timeout }} {{ nginx_keepalive_timeout }};
+
+	# Allows to close the connection after a client stops responding. Frees up
+	# socket-associated memory.
+	reset_timedout_connection	on;
+
+	# Specifies the maximum accepted body size of a client request, as
+	# indicated by the request header Content-Length. If the stated content
+	# length is greater than this size, then the client receives the HTTP
+	# error code 413. Set to 0 to disable.
+	client_max_body_size		{{ nginx_client_max_body_size }};
+
+	# Buffer size for reading client request body. In case the request body is
+	# larger than the buffer, the whole body or only its part is written to a
+	# temporary file.
+	client_body_buffer_size		{{ nginx_client_body_buffer_size }};
+
+	# The maximum number and size of buffers used for reading large client
+	# request header. A request line cannot exceed the size of one buffer, or
+	# the 414 error is returned to the client
+	large_client_header_buffers 4 2k;
+
+	# Sendfile copies data between one FD and other from within the kernel,
+	# which is more efficient than read() + write().
+	sendfile 					on;
+
+	# Causes nginx to attempt to send its HTTP response head in one packet,
+	# instead of using partial frames.
+	tcp_nopush 					on;
+
+	# Don't buffer data-sends (disable Nagle algorithm).
+	# Good for sending frequent small bursts of data in real time.
+	tcp_nodelay 				on;
+
+	#
+	# TLS/SSL
+	#
+
+	# Disables obsolete and weak SSL protocols (SSLv2 and SSLv3).
+	ssl_protocols				TLSv1 TLSv1.1 TLSv1.2;
+
+	# Specifies that our cipher suits should be preferred over client ciphers.
+	ssl_prefer_server_ciphers	on;
+
+	# List of ciphers to enable or forbid ordered by preference,
+	# based on https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers.
+	ssl_ciphers					ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!RC4;
+
+	# Enables a shared SSL cache with size that can hold around 8000 sessions.
+	ssl_session_cache			shared:SSL:2m;
+
+	# Timeout of the SSL session cache.
+	ssl_session_timeout			{{ nginx_ssl_session_timeout }};
+
+{% if 'gzip' in nginx_modules %}
+	#
+	# Compression
+	#
+
+	# Enable gzipping of responses.
+	gzip 						on;
+
+	# Gzip compression level of a response.
+	gzip_comp_level				{{ nginx_gzip_comp_level }};
+
+	# Minimum length of a response that will be gzipped.
+	gzip_min_length 			{{ nginx_gzip_min_length }};
+
+	gzip_proxied				{{ nginx_gzip_proxied | join(' ') }};
+
+	# Enables gzipping of responses for the specified MIME types.
+	gzip_types					{{ nginx_gzip_types | join(' ') }};
+
+	# Set the Vary HTTP header as defined in the RFC 2616.
+	gzip_vary					on;
+
+{% endif %}
+{% if 'gzip_static' in nginx_modules %}
+	# Enable checking the existence of precompressed files.
+	gzip_static					on;
+
+{% endif %}
+
+	# Don't tell nginx version to clients.
+	server_tokens				off;
+
+	# Includes virtual hosts configs.
+	include	/etc/nginx/sites/*.conf;
+}

@@ -1,0 +1,44 @@
+# {{ ansible_managed }}
+#
+# This is a default site configuration which will simply return 404, preventing
+# chance access to any other virtualhost.
+
+server {
+	{% if nginx_ipv6 -%}
+	listen	[::]:80 default_server ipv6only=off;
+	{% else -%}
+	listen	80 default_server;
+	{% endif %}
+
+	# Everything is a 404
+	location / {
+		return 404;
+	}
+
+	# You may need this to prevent return 404 recursion
+	location = /404.html {
+		internal;
+	}
+}
+
+server {
+	{% if nginx_ipv6 -%}
+	listen	[::]:443 default_server ipv6only=off;
+	{% else -%}
+	listen	443 default_server;
+	{% endif %}
+
+	# Everything is a 404
+	location / {
+		return 404;
+	}
+
+	# You may need this to prevent return 404 recursion
+	location = /404.html {
+		internal;
+	}
+
+	ssl	on;
+	ssl_certificate		/etc/ssl/nginx/nginx.pem;
+	ssl_certificate_key	/etc/ssl/nginx/nginx.key;
+}

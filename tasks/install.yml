@@ -1,0 +1,29 @@
+---
+- name: specify modules in make.conf
+  lineinfile: >
+    dest=/etc/portage/make.conf
+    regexp='^NGINX_MODULES_HTTP='
+    line='NGINX_MODULES_HTTP="{{ nginx_modules|join(" ") }}"'
+  tags: packages
+
+- name: install nginx
+  portage: package=www-servers/nginx
+  tags: packages
+
+- name: create directories for sites and includes
+  file: >
+    path={{ item }}
+    state=directory
+    owner=root group=root
+  with_items:
+    - "{{ nginx_sites_dir }}"
+    - "{{ nginx_incl_dir }}"
+
+- name: remove unused files
+  file: >
+    state=absent
+    path=/etc/nginx/{{ item }}
+  with_items:
+    - fastcgi.conf
+    - fastcgi_params
+  tags: cleanup
