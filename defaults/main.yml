@@ -50,6 +50,14 @@ nginx_keepalive_timeout: 15
 # Based on https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers.
 nginx_ssl_ciphers: "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!RC4"
 
+# Path of the file with Diffie-Hellman parameters for EDH ciphers, or empty
+# string to use default DH groups (not recommended!).
+# It'll be generated if not exist yet.
+nginx_ssl_dhparam: "/etc/ssl/nginx/dh{{ nginx_ssl_dhparam_bits }}.pem"
+
+# Number of bites of Diffie-Hellman modulus to be generated.
+nginx_ssl_dhparam_bits: 2048
+
 # Timeout of the SSL session cache in seconds.
 nginx_ssl_session_timeout: 600
 

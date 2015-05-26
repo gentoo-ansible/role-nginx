@@ -28,3 +28,10 @@
     src=logrotate.d/nginx
     dest=/etc/logrotate.d/nginx
     owner=root group=root mode=0644
+
+- name: generate unique Diffie-Hellman parameters (this will take few minutes)
+  command: >
+    openssl dhparam -out {{ nginx_ssl_dhparam }} {{ nginx_ssl_dhparam_bits }}
+    creates={{ nginx_ssl_dhparam }}
+  when: nginx_ssl_dhparam != ''
+  notify: reload nginx

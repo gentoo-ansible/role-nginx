@@ -94,6 +94,11 @@ http {
 	# List of ciphers to enable or forbid ordered by preference.
 	ssl_ciphers					{{ nginx_ssl_ciphers }};
 
+{% if nginx_ssl_dhparam != '' %}
+	# Path of the file with Diffie-Hellman parameters for EDH ciphers.
+	ssl_dhparam					{{ nginx_ssl_dhparam }};
+
+{% endif %}
 	# Enables a shared SSL cache with size that can hold around 8000 sessions.
 	ssl_session_cache			shared:SSL:2m;
 
