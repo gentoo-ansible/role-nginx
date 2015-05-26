@@ -91,9 +91,8 @@ http {
 	# Specifies that our cipher suits should be preferred over client ciphers.
 	ssl_prefer_server_ciphers	on;
 
-	# List of ciphers to enable or forbid ordered by preference,
-	# based on https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers.
-	ssl_ciphers					ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!RC4;
+	# List of ciphers to enable or forbid ordered by preference.
+	ssl_ciphers					{{ nginx_ssl_ciphers }};
 
 	# Enables a shared SSL cache with size that can hold around 8000 sessions.
 	ssl_session_cache			shared:SSL:2m;
