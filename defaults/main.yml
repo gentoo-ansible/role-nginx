@@ -8,6 +8,13 @@ nginx_ipv6: true
 # Whether to copy default server config to sites/default.conf.
 nginx_default_server_enabled: true
 
+
+# A list of name servers used to resolve names of upstream
+# servers into addresses.
+# Note: Variable ansible_nameservers is filled with addresses
+# from /etc/resolv.conf.
+nginx_resolvers: "{{ ansible_nameservers }}"
+
 #
 # Logging
 #

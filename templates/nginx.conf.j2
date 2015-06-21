@@ -13,6 +13,14 @@ events {
 }
 
 http {
+	# Don't tell nginx version to clients.
+	server_tokens	off;
+{% if nginx_resolvers %}
+
+	# Name servers used to resolve names of upstream servers into addresses.
+	resolver 		{{ nginx_resolvers | join(' ') }};
+{% endif %}
+
 	#
 	# Media Types
 	#
@@ -133,9 +141,6 @@ http {
 	gzip_static					on;
 
 {% endif %}
-
-	# Don't tell nginx version to clients.
-	server_tokens				off;
 
 	# Includes virtual hosts configs.
 	include	/etc/nginx/sites/*.conf;

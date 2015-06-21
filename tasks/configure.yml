@@ -1,4 +1,7 @@
 ---
+- name: gathers facts about nameservers
+  action: nameservers_facts
+
 - name: configure nginx.conf
   template: >
     src=nginx.conf.j2

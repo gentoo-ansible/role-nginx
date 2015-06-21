@@ -1,0 +1,17 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+def main():
+    module = AnsibleModule({})
+
+    nameservers = [
+        re.split(r'\s+', line)[1]
+        for line in open('/etc/resolv.conf')
+        if line.lower().startswith('nameserver ')]
+
+    module.exit_json(ansible_facts={'ansible_nameservers': nameservers})
+
+
+# import module snippets
+from ansible.module_utils.basic import *
+main()
