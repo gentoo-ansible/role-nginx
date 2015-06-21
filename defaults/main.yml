@@ -63,7 +63,7 @@ nginx_ssl_ciphers: "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+A
 nginx_ssl_dhparam: "/etc/ssl/nginx/dh{{ nginx_ssl_dhparam_bits }}.pem"
 
 # Number of bites of Diffie-Hellman modulus to be generated.
-nginx_ssl_dhparam_bits: 2048
+nginx_ssl_dhparam_bits: 1024
 
 # Timeout of the SSL session cache in seconds.
 nginx_ssl_session_timeout: 600
