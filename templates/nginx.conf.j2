@@ -141,6 +141,18 @@ http {
 	gzip_static					on;
 
 {% endif %}
+{% if 'lua' in nginx_modules %}
+	#
+	# Lua
+	#
+
+	# Path of the file with trusted CA certificates.
+	lua_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+
+	# The verification depth in the server certificates chain.
+	lua_ssl_verify_depth 		3;
+
+{% endif %}
 
 	# Includes virtual hosts configs.
 	include	/etc/nginx/sites/*.conf;
