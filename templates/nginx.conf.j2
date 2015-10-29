@@ -18,7 +18,7 @@ http {
 {% if nginx_resolvers %}
 
 	# Name servers used to resolve names of upstream servers into addresses.
-	resolver 		{{ nginx_resolvers | join(' ') }};
+	resolver 		{{ nginx_resolvers | ipwrap | join(' ') }};
 {% endif %}
 
 	#
